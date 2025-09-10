@@ -28,7 +28,14 @@ def get_author_id(author_name, link=None):
         
     URL = "https://scholar.google.com/scholar"
     PARAMS = {"as_sdt": "0,5", "q": author_name, "btnG": "", "hl":"en"}
-    HEADERS = {"User-Agent": "Mozilla/5.0"}
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                    '(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Referer': 'https://scholar.google.com/',
+        'Connection': 'keep-alive'
+    }
     
     resp = requests.get(URL, params=PARAMS, headers=HEADERS, timeout=20)
     tree = html.fromstring(resp.text)
@@ -41,9 +48,14 @@ def get_author_id(author_name, link=None):
     return author_id
 
 def get_cookies():
-    """Get Google cookies."""
-    response = requests.get('https://google.com')
+    """Try to spoof some realistic cookies (experimental)"""
+    response = requests.get(
+        'https://scholar.google.com',
+        headers={'User-Agent': 'Mozilla/5.0'},
+        timeout=10
+    )
     return response.cookies.get_dict() if response.status_code == 200 else {}
+
 
 def get_driver():
     """Initialize selenium driver if available."""
@@ -103,7 +115,14 @@ def _fetch_and_parse(author_id, link, pagination):
         "hl":"en"
     }
     
-    HEADERS = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36'}
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                    '(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Referer': 'https://scholar.google.com/',
+        'Connection': 'keep-alive'
+    }
     
     r = requests.get(URL, params=PARAMS, headers=HEADERS, timeout=20, cookies=get_cookies())
     r.raise_for_status()
@@ -190,7 +209,14 @@ def extract_paper_metadata(doc):
 
 def download_pdf_from_scholar_article(article_url: str, paper_title: str, year: int = None, use_selenium: bool = False) -> tuple:
     """Download PDF and extract metadata from Scholar paper page - simplified."""
-    HEADERS = {"User-Agent": "Mozilla/5.0"}
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                    '(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Referer': 'https://scholar.google.com/',
+        'Connection': 'keep-alive'
+    }
     BASE = "https://scholar.google.com"
     
     # Make one request to get the paper page
