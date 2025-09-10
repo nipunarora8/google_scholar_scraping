@@ -2,8 +2,8 @@ name: Run Scraper When scientists.csv Changes
 
 on:
   push:
-    paths:
-      - 'scientists.csv'    # Trigger only when this file is changed
+    # paths:
+    #   - 'scientists.csv'    # Trigger only when this file is changed
   workflow_dispatch:        # Optional manual trigger
 
 jobs:
@@ -14,29 +14,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
-    - name: Install Python dependencies
+    - name: Run scraper inside scholar conda environment
+      shell: bash -l {0}   # Important: loads your conda environment properly
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Run the scraper
-      run: |
+        conda activate scholar
         python google_scholar_paper_scraper.py \
           --csv-file "scientists.csv" \
           --column "Google Scholar Page" \
           --max-papers 2
-        
-
